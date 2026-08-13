@@ -1,3 +1,6 @@
+// ---------- Shared: respect reduced-motion preference everywhere ----------
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 // ---------- Render content from data.js ----------
 
 function renderContact(){
@@ -42,7 +45,7 @@ function renderExperience(){
 function renderSkills(){
   const el = document.getElementById('skillsGrid');
   el.innerHTML = PORTFOLIO_DATA.skills.map(s => `
-    <div class="skill-panel">
+    <div class="skill-panel${s.wide ? ' wide' : ''}">
       <h4>${s.category}</h4>
       <div class="tag-row">
         ${s.tags.map(t => `<span class="tag">${t}</span>`).join('')}
@@ -97,6 +100,51 @@ renderEducation();
 renderAwards();
 renderCopyright();
 
+// ---------- Rotating role title (typewriter) ----------
+function renderRoles(){
+  const roleEl = document.getElementById('roleText');
+  const roles = (PORTFOLIO_DATA.roles && PORTFOLIO_DATA.roles.length)
+    ? PORTFOLIO_DATA.roles
+    : ['Database Developer'];
+
+  if(reduceMotion){
+    roleEl.textContent = roles[0];
+    return;
+  }
+
+  const TYPE_SPEED = 65;
+  const DELETE_SPEED = 32;
+  const HOLD_TIME = 1700;
+  const GAP_TIME = 400;
+  let roleIndex = 0, charIndex = 0, deleting = false;
+
+  function tick(){
+    const current = roles[roleIndex];
+    if(!deleting){
+      charIndex++;
+      roleEl.textContent = current.slice(0, charIndex);
+      if(charIndex === current.length){
+        deleting = true;
+        setTimeout(tick, HOLD_TIME);
+        return;
+      }
+      setTimeout(tick, TYPE_SPEED);
+    } else {
+      charIndex--;
+      roleEl.textContent = current.slice(0, charIndex);
+      if(charIndex === 0){
+        deleting = false;
+        roleIndex = (roleIndex + 1) % roles.length;
+        setTimeout(tick, GAP_TIME);
+        return;
+      }
+      setTimeout(tick, DELETE_SPEED);
+    }
+  }
+  tick();
+}
+renderRoles();
+
 // ---------- Fade the scroll cue as soon as the user scrolls ----------
 const scrollCue = document.querySelector('.scroll-cue');
 function updateScrollCue(){
@@ -139,28 +187,27 @@ const countIO = new IntersectionObserver((entries) => {
 }, { threshold: 0.4 });
 counters.forEach(el => countIO.observe(el));
 
-// ---------- Hero schema graph canvas ----------
-const canvas = document.getElementById('graphCanvas');
+// ---------- Persistent schema graph canvas (fixed background, whole page) ----------
+const canvas = document.getElementById('bgGraphCanvas');
 const ctx = canvas.getContext('2d');
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let W, H, DPR;
 const labels = ['employees','shows','seats','bookings','attendance','branches','vouchers','tickets','shifts','payroll','audit_log','sessions'];
 
 function resize(){
   DPR = Math.min(window.devicePixelRatio || 1, 2);
-  W = canvas.clientWidth; H = canvas.clientHeight;
+  W = window.innerWidth; H = window.innerHeight;
   canvas.width = W * DPR; canvas.height = H * DPR;
   ctx.setTransform(DPR,0,0,DPR,0,0);
 }
 
 let nodes = [];
 function initNodes(){
-  const count = window.innerWidth < 640 ? 10 : 16;
+  const count = window.innerWidth < 640 ? 12 : 22;
   nodes = Array.from({length: count}, (_, i) => ({
     x: Math.random() * W,
     y: Math.random() * H,
-    vx: (Math.random() - 0.5) * 0.18,
-    vy: (Math.random() - 0.5) * 0.18,
+    vx: (Math.random() - 0.5) * 0.15,
+    vy: (Math.random() - 0.5) * 0.15,
     label: labels[i % labels.length],
     showLabel: i % 3 === 0
   }));
@@ -173,9 +220,9 @@ function draw(){
       const a = nodes[i], b = nodes[j];
       const dx = a.x-b.x, dy = a.y-b.y;
       const dist = Math.sqrt(dx*dx+dy*dy);
-      const maxDist = 260;
+      const maxDist = 240;
       if(dist < maxDist){
-        const alpha = (1 - dist/maxDist) * 0.35;
+        const alpha = (1 - dist/maxDist) * 0.32;
         ctx.strokeStyle = `rgba(92,225,230,${alpha})`;
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -187,14 +234,14 @@ function draw(){
   ctx.font = '11px JetBrains Mono, monospace';
   nodes.forEach(n => {
     ctx.beginPath();
-    ctx.arc(n.x, n.y, 3.2, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba(156,140,255,0.9)';
-    ctx.shadowColor = 'rgba(156,140,255,0.8)';
-    ctx.shadowBlur = 8;
+    ctx.arc(n.x, n.y, 3, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(156,140,255,0.85)';
+    ctx.shadowColor = 'rgba(156,140,255,0.75)';
+    ctx.shadowBlur = 7;
     ctx.fill();
     ctx.shadowBlur = 0;
     if(n.showLabel){
-      ctx.fillStyle = 'rgba(154,165,184,0.55)';
+      ctx.fillStyle = 'rgba(154,165,184,0.5)';
       ctx.fillText(n.label, n.x + 8, n.y - 8);
     }
   });
@@ -220,3 +267,23 @@ start();
 document.addEventListener('visibilitychange', () => {
   if(!document.hidden && !reduceMotion) requestAnimationFrame(step);
 });
+
+// ---------- Scroll progress bar ----------
+const progressBar = document.getElementById('progressBar');
+function updateProgress(){
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0;
+  progressBar.style.width = pct + '%';
+}
+window.addEventListener('scroll', updateProgress, { passive: true });
+window.addEventListener('resize', updateProgress);
+updateProgress();
+
+// ---------- Cursor spotlight ----------
+if(!reduceMotion){
+  const spotlight = document.getElementById('spotlight');
+  window.addEventListener('mousemove', (e) => {
+    spotlight.style.setProperty('--mx', e.clientX + 'px');
+    spotlight.style.setProperty('--my', e.clientY + 'px');
+  }, { passive: true });
+}

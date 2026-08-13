@@ -12,7 +12,10 @@
 <body>
 
 <div class="bg-glow"></div>
+<canvas id="bgGraphCanvas"></canvas>
+<div class="spotlight" id="spotlight"></div>
 <div class="noise"></div>
+<div class="progress-bar" id="progressBar"></div>
 
 <nav class="nav">
   <div class="nav-pill">
@@ -28,10 +31,9 @@
 </nav>
 
 <section class="hero">
-  <canvas id="graphCanvas"></canvas>
   <div class="wrap hero-content">
     <p class="eyebrow"><span class="dot"></span>AVAILABLE FOR OPPORTUNITIES</p>
-    <h1>Nihalurrahiyan A<br><span class="grad">Database Developer</span></h1>
+    <h1>Nihalurrahiyan A<br><span class="sr-only" id="roleTextSR">Database Developer</span><span class="grad" id="roleText" aria-hidden="true"></span><span class="type-cursor" aria-hidden="true"></span></h1>
     <p class="hero-sub">
       I design and optimize the <strong>database layer behind ERP systems</strong> &mdash;
       stored procedures, schema architecture, and performance engineering that hold up
@@ -83,18 +85,19 @@
 
   <section id="education">
     <div class="section-head reveal">
-      <p class="section-eyebrow">// education</p>
-      <h2 class="section-title">Foundations</h2>
+      <p class="section-eyebrow">// credentials</p>
+      <h2 class="section-title">Foundations &amp; recognition</h2>
     </div>
-    <div class="reveal" id="eduList"></div>
-  </section>
-
-  <section id="awards">
-    <div class="section-head reveal">
-      <p class="section-eyebrow">// recognition</p>
-      <h2 class="section-title">Awards</h2>
+    <div class="credentials-grid reveal">
+      <div>
+        <p class="credentials-label">Education</p>
+        <div id="eduList"></div>
+      </div>
+      <div>
+        <p class="credentials-label">Awards</p>
+        <div id="awardsList"></div>
+      </div>
     </div>
-    <div class="reveal" id="awardsList"></div>
   </section>
 
 </div>

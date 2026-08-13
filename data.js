@@ -3,6 +3,15 @@
 
 const PORTFOLIO_DATA = {
 
+  // The hero title cycles through these — add, remove, or reorder freely.
+  roles: [
+    "Database Developer",
+    "SQL Developer",
+    "PostgreSQL Developer",
+    "MS SQL Developer",
+    "Backend Developer"
+  ],
+
   metrics: [
     { count: 87, unit: "%", label: "Faster carry-forward processing", before: "120 min", after: "15 min" },
     { count: 70, unit: "%", label: "Smaller production database", before: "78 GB", after: "20\u201324 GB" },
@@ -36,7 +45,7 @@ const PORTFOLIO_DATA = {
 
   skills: [
     { category: "Databases", tags: ["MS SQL Server", "PostgreSQL", "MySQL"] },
-    { category: "SQL Development", tags: ["T-SQL", "PL/pgSQL", "Stored Procedures", "Functions", "Triggers", "Views", "Window Functions", "CTEs"] },
+    { category: "SQL Development", wide: true, tags: ["T-SQL", "PL/pgSQL", "Stored Procedures", "Functions", "Triggers", "Views", "Window Functions", "CTEs"] },
     { category: "Performance", tags: ["Execution Plans", "Index Tuning", "Query Profiling"] },
     { category: "Data Engineering", tags: ["JSON Processing", "Data Modeling", "Relational Design", "ETL Concepts"] },
     { category: "Tools", tags: ["SSMS", "SQL Server Agent", "pgAdmin", "SQL Server Profiler", "Git"] }
