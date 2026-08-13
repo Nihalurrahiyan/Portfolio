@@ -27,6 +27,7 @@ const PORTFOLIO_DATA = {
       bullets: [
         "Diagnosed and fixed a Cartesian Product bottleneck in a decade-old Logistics ERP &mdash; <strong>87% faster</strong> carry-forward processing.",
         "Rebuilt log retention strategy, cutting production database size by <strong>70%</strong> with no performance trade-off.",
+        "Built a metadata-mapping engine for an OCR/AI document pipeline &mdash; matching AI-extracted keywords from unstructured PDFs to their relational database IDs, achieving <strong>100% accurate entity linking</strong>.",
         "Designed a branch-to-head-office sync framework with direct-insert logic and a config-driven, extensible table list.",
         "Proposed a metadata-driven attribute framework during HRMS's build phase, preventing table sprawl &mdash; now serving 200+ employees.",
         "Closed <strong>170+</strong> production tickets across data correction, procedure fixes, error resolution, and estimation."
@@ -57,21 +58,31 @@ const PORTFOLIO_DATA = {
       title: "Concurrency-Safe Seat Booking System",
       desc: "A PostgreSQL project built to prove &mdash; not just explain &mdash; how race conditions happen in booking/inventory systems, and how to eliminate them with atomic conditional updates instead of separate read-then-write steps.",
       proof: "50 concurrent booking attempts, same seat:<br>naive version &rarr; <span class=\"bad\">multiple bookings created (race condition confirmed)</span><br>fixed version &rarr; <span class=\"ok\">exactly 1 booking, every run</span>",
-      link: "https://github.com/Nihalurrahiyan/concurrent-booking-demo"
+      links: [
+        { label: "View on GitHub", url: "https://github.com/Nihalurrahiyan/A-concurrency-safe-booking-system-Learning" }
+      ]
     },
     {
       tag: "SCHEMA DESIGN",
       title: "Metadata-Driven Attribute Framework",
       desc: "Designed during a new HRMS build to replace what would have become dozens of module-specific configuration tables with a single reusable <code>attribute_definition</code> / <code>attribute_value</code> structure &mdash; cutting future schema changes down to data entries instead of migrations.",
       proof: null,
-      link: null
+      // Placeholders — replace "#" with your real diagram/repo links once ready.
+      links: [
+        { label: "View ERD / Architecture Diagram", url: "#" },
+        { label: "View on GitHub", url: "#" }
+      ]
     },
     {
       tag: "DATA SYNCHRONIZATION",
       title: "Branch&ndash;Head Office Sync Framework",
       desc: "Built a conflict-free synchronization framework so a head office server can safely receive read-only voucher data from a branch office, using direct-insert logic and a config-driven table list so new tables can join the sync scope without a code change.",
       proof: null,
-      link: null
+      // Placeholders — replace "#" with your real diagram/repo links once ready.
+      links: [
+        { label: "View ERD / Architecture Diagram", url: "#" },
+        { label: "View on GitHub", url: "#" }
+      ]
     }
   ],
 

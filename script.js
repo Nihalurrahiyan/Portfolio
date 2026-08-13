@@ -30,10 +30,10 @@ function renderExperience(){
   const el = document.getElementById('timeline');
   el.innerHTML = PORTFOLIO_DATA.experience.map(e => `
     <div class="tl-entry">
-      <p class="tl-tag">${e.tag}</p>
-      <h3 class="tl-role">${e.role}</h3>
-      <p class="tl-meta">${e.meta}</p>
       <div class="tl-card">
+        <p class="tl-tag">${e.tag}</p>
+        <h3 class="tl-role">${e.role}</h3>
+        <p class="tl-meta">${e.meta}</p>
         <ul class="tl-list">
           ${e.bullets.map(b => `<li>${b}</li>`).join('')}
         </ul>
@@ -62,7 +62,11 @@ function renderProjects(){
       <h3 class="project-title">${p.title}</h3>
       <p class="project-desc">${p.desc}</p>
       ${p.proof ? `<div class="proof-box">${p.proof}</div>` : ''}
-      ${p.link ? `<p class="project-links"><a href="${p.link}" target="_blank" rel="noopener">View on GitHub &rarr;</a></p>` : ''}
+      ${(p.links && p.links.length) ? `
+        <div class="project-links">
+          ${p.links.map(l => `<a class="arrow-link" href="${l.url}" target="_blank" rel="noopener">${l.label}<span class="arrow">&nearr;</span></a>`).join('')}
+        </div>
+      ` : ''}
     </div>
   `).join('');
 }
