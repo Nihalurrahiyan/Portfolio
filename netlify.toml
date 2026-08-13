@@ -1,0 +1,49 @@
+# Netlify configuration for nihalurrahiyan.netlify.app
+#
+# Note on "client-side routing": this site is a single static HTML page with
+# in-page anchor links (#metrics, #experience, etc.) — there is no JS router
+# rendering different routes. Because of that, the classic SPA catch-all
+# redirect (redirecting every path to /index.html so a router can take over)
+# doesn't apply here — Netlify already serves index.html at the root by
+# default, and Google crawls a single static page like this without any
+# special routing config. What actually helps this site are the caching and
+# security headers below.
+
+[build]
+  publish = "."
+
+# Cache static assets aggressively — they're content-hashed-free here, so keep
+# this moderate rather than "immutable" since files may change on redeploy.
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
+[[headers]]
+  for = "/*.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, must-revalidate"
+
+[[headers]]
+  for = "/*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, must-revalidate"
+
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, must-revalidate"
+
+# Basic security headers, applied site-wide
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"

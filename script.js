@@ -64,7 +64,7 @@ function renderProjects() {
       ${p.proof ? `<div class="proof-box">${p.proof}</div>` : ''}
       ${(p.links && p.links.length) ? `
         <div class="project-links">
-          ${p.links.map(l => `<a class="arrow-link" href="${l.url}" target="_blank" rel="noopener">${l.label}<span class="arrow">&nearr;</span></a>`).join('')}
+          ${p.links.map(l => `<a class="arrow-link" href="${l.url}" target="_blank" rel="noopener noreferrer" aria-label="${l.label} for ${p.title} (opens in a new tab)">${l.label}<span class="arrow">&nearr;</span></a>`).join('')}
         </div>
       ` : ''}
     </div>

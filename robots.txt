@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nihalurrahiyan.netlify.app/sitemap.xml
