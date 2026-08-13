@@ -51,18 +51,21 @@
 
   <nav class="nav" aria-label="Primary">
     <div class="nav-pill">
-      <div class="nav-mark">nihal<span>.db</span></div>
-      <div class="nav-links">
+      <a class="nav-mark" href="#top" aria-label="Go to top">nihal<span>.db</span></a>
+      <div class="nav-links" id="navLinks">
         <a href="#metrics">metrics</a>
         <a href="#experience">experience</a>
         <a href="#skills">skills</a>
         <a href="#projects">projects</a>
         <a href="#contact">contact</a>
       </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
 
-  <section class="hero">
+  <section class="hero" id="top">
     <div class="wrap hero-content">
       <p class="eyebrow"><span class="dot"></span>AVAILABLE FOR OPPORTUNITIES</p>
       <h1>Nihalurrahiyan A<br><span class="sr-only" id="roleTextSR">Database Developer</span><span class="grad"

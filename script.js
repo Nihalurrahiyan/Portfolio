@@ -291,3 +291,42 @@ if (!reduceMotion) {
     spotlight.style.setProperty('--my', e.clientY + 'px');
   }, { passive: true });
 }
+
+// ---------- Mobile nav toggle ----------
+const navToggle = document.getElementById('navToggle');
+const navLinks = document.getElementById('navLinks');
+
+function closeNav() {
+  navLinks.classList.remove('open');
+  navToggle.setAttribute('aria-expanded', 'false');
+  navToggle.setAttribute('aria-label', 'Open menu');
+}
+function openNav() {
+  navLinks.classList.add('open');
+  navToggle.setAttribute('aria-expanded', 'true');
+  navToggle.setAttribute('aria-label', 'Close menu');
+}
+
+navToggle.addEventListener('click', () => {
+  const isOpen = navLinks.classList.contains('open');
+  isOpen ? closeNav() : openNav();
+});
+
+// Close after picking a section — otherwise the menu stays open over the content
+navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
+
+// Close on outside click
+document.addEventListener('click', (e) => {
+  if (!navLinks.classList.contains('open')) return;
+  if (!e.target.closest('.nav-pill')) closeNav();
+});
+
+// Close on Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeNav();
+});
+
+// Close automatically if the viewport is resized back up to desktop
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 640) closeNav();
+});
