@@ -5,9 +5,9 @@ const PORTFOLIO_DATA = {
 
   // The hero title cycles through these — add, remove, or reorder freely.
   roles: [
+    "PostgreSQL Developer",
     "Database Developer",
     "SQL Developer",
-    "PostgreSQL Developer",
     "MS SQL Developer",
     "Backend Developer"
   ],
