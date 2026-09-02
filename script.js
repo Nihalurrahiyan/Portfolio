@@ -106,48 +106,36 @@ renderCopyright();
 renderVisitorStats();
 
 // ---------- Visitor counter (footer) ----------
-// Uses CounterAPI.dev — see the visitorCounter config at the top of data.js
-// for setup instructions. Fails silently (stats line stays hidden) if not
-// configured or if the service is unreachable, so a broken/offline counter
-// service never breaks the rest of the page.
+// Uses CounterAPI.dev's official browser library (loaded via the <script> tag
+// in index.html) — see the visitorCounter config at the top of data.js for
+// setup instructions. A raw fetch() with a manual Authorization header
+// triggers a CORS preflight that CounterAPI's API doesn't support for
+// browser requests; their own library avoids this. Fails silently (stats
+// line stays hidden) if not configured or the service is unreachable.
 async function renderVisitorStats() {
   const cfg = PORTFOLIO_DATA.visitorCounter;
   const statsEl = document.getElementById('footerStats');
   if (!cfg || !cfg.apiKey || !cfg.workspace) { return; } // not configured yet — stays hidden
+  if (typeof Counter === 'undefined') {
+    console.error('Visitor counter: CounterAPI browser library failed to load.');
+    return;
+  }
 
-  const base = `https://api.counterapi.dev/v2/${encodeURIComponent(cfg.workspace)}`;
-  const headers = { Authorization: `Bearer ${cfg.apiKey}` };
   const UNIQUE_FLAG = 'nihal_portfolio_visited';
 
-  function extractCount(json) {
-    const d = json && json.data ? json.data : json;
-    if (!d) return null;
-    const candidates = [d.up_count, d.count, d.value];
-    for (const c of candidates) { if (typeof c === 'number') return c; }
-    return null;
-  }
-
-  async function hit(name) {
-    const res = await fetch(`${base}/${encodeURIComponent(name)}/up`, { headers });
-    if (!res.ok) throw new Error('counter up failed: ' + res.status);
-    return extractCount(await res.json());
-  }
-
-  async function read(name) {
-    const res = await fetch(`${base}/${encodeURIComponent(name)}`, { headers });
-    if (!res.ok) throw new Error('counter get failed: ' + res.status);
-    return extractCount(await res.json());
-  }
-
   try {
-    const totalCount = await hit(cfg.totalCounterName);
+    const counter = new Counter({ workspace: cfg.workspace, accessToken: cfg.apiKey });
+
+    const totalResult = await counter.up(cfg.totalCounterName);
 
     const alreadyCounted = localStorage.getItem(UNIQUE_FLAG) === '1';
-    const uniqueCount = alreadyCounted
-      ? await read(cfg.uniqueCounterName)
-      : await hit(cfg.uniqueCounterName);
+    const uniqueResult = alreadyCounted
+      ? await counter.get(cfg.uniqueCounterName)
+      : await counter.up(cfg.uniqueCounterName);
     if (!alreadyCounted) { localStorage.setItem(UNIQUE_FLAG, '1'); }
 
+    const totalCount = totalResult && typeof totalResult.value === 'number' ? totalResult.value : null;
+    const uniqueCount = uniqueResult && typeof uniqueResult.value === 'number' ? uniqueResult.value : null;
     if (totalCount === null || uniqueCount === null) return;
 
     const fmt = (n) => new Intl.NumberFormat().format(n);
