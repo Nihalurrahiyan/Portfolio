@@ -3,11 +3,18 @@
 
 const PORTFOLIO_DATA = {
 
+  visitorCounter: {
+    workspace: "nihalurrahiyans-portfolio",                  // e.g. "nihalurrahiyan"
+    apiKey: "ut_3tg85jrsfDUnWNnwNQ2z77dfKC1o18jufeRPjCCT",    // e.g. "ctr_xxxxxxxxxxxxxxxx"
+    totalCounterName: "portfolio-visits-nihalurrahiyan",
+    uniqueCounterName: "portfolio-unique-visits-nihalurrahiyan"
+  },
+
   // The hero title cycles through these — add, remove, or reorder freely.
   roles: [
-    "PostgreSQL Developer",
     "Database Developer",
     "SQL Developer",
+    "PostgreSQL Developer",
     "MS SQL Developer",
     "Backend Developer"
   ],

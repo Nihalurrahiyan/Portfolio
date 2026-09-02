@@ -103,6 +103,63 @@ renderProjects();
 renderEducation();
 renderAwards();
 renderCopyright();
+renderVisitorStats();
+
+// ---------- Visitor counter (footer) ----------
+// Uses CounterAPI.dev — see the visitorCounter config at the top of data.js
+// for setup instructions. Fails silently (stats line stays hidden) if not
+// configured or if the service is unreachable, so a broken/offline counter
+// service never breaks the rest of the page.
+async function renderVisitorStats() {
+  const cfg = PORTFOLIO_DATA.visitorCounter;
+  const statsEl = document.getElementById('footerStats');
+  if (!cfg || !cfg.apiKey || !cfg.workspace) { return; } // not configured yet — stays hidden
+
+  const base = `https://api.counterapi.dev/v2/${encodeURIComponent(cfg.workspace)}`;
+  const headers = { Authorization: `Bearer ${cfg.apiKey}` };
+  const UNIQUE_FLAG = 'nihal_portfolio_visited';
+
+  function extractCount(json) {
+    const d = json && json.data ? json.data : json;
+    if (!d) return null;
+    const candidates = [d.up_count, d.count, d.value];
+    for (const c of candidates) { if (typeof c === 'number') return c; }
+    return null;
+  }
+
+  async function hit(name) {
+    const res = await fetch(`${base}/${encodeURIComponent(name)}/up`, { headers });
+    if (!res.ok) throw new Error('counter up failed: ' + res.status);
+    return extractCount(await res.json());
+  }
+
+  async function read(name) {
+    const res = await fetch(`${base}/${encodeURIComponent(name)}`, { headers });
+    if (!res.ok) throw new Error('counter get failed: ' + res.status);
+    return extractCount(await res.json());
+  }
+
+  try {
+    const totalCount = await hit(cfg.totalCounterName);
+
+    const alreadyCounted = localStorage.getItem(UNIQUE_FLAG) === '1';
+    const uniqueCount = alreadyCounted
+      ? await read(cfg.uniqueCounterName)
+      : await hit(cfg.uniqueCounterName);
+    if (!alreadyCounted) { localStorage.setItem(UNIQUE_FLAG, '1'); }
+
+    if (totalCount === null || uniqueCount === null) return;
+
+    const fmt = (n) => new Intl.NumberFormat().format(n);
+    statsEl.innerHTML =
+      `<span class="stat-value">${fmt(totalCount)}</span> visits &middot; ` +
+      `<span class="stat-value">${fmt(uniqueCount)}</span> unique`;
+    statsEl.hidden = false;
+  } catch (err) {
+    console.error('Visitor counter unavailable:', err);
+    // stays hidden — a broken counter service should never break the page
+  }
+}
 
 // ---------- Rotating role title (typewriter) ----------
 function renderRoles() {
