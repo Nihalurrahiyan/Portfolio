@@ -11,6 +11,7 @@
 
 [build]
   publish = "."
+  functions = "netlify/functions"
 
 # Cache static assets aggressively — they're content-hashed-free here, so keep
 # this moderate rather than "immutable" since files may change on redeploy.

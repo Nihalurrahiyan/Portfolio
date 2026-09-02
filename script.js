@@ -106,42 +106,28 @@ renderCopyright();
 renderVisitorStats();
 
 // ---------- Visitor counter (footer) ----------
-// Uses CounterAPI.dev's official browser library (loaded via the <script> tag
-// in index.html) — see the visitorCounter config at the top of data.js for
-// setup instructions. A raw fetch() with a manual Authorization header
-// triggers a CORS preflight that CounterAPI's API doesn't support for
-// browser requests; their own library avoids this. Fails silently (stats
-// line stays hidden) if not configured or the service is unreachable.
+// Calls our own Netlify function (netlify/functions/visitor-count.js) instead
+// of CounterAPI directly — same-origin request, so no CORS is possible. The
+// function holds the real API key server-side and talks to CounterAPI itself.
+// Fails silently (stats line stays hidden) if the function errors or isn't
+// deployed yet, so this never breaks the rest of the page.
 async function renderVisitorStats() {
-  const cfg = PORTFOLIO_DATA.visitorCounter;
   const statsEl = document.getElementById('footerStats');
-  if (!cfg || !cfg.apiKey || !cfg.workspace) { return; } // not configured yet — stays hidden
-  if (typeof Counter === 'undefined') {
-    console.error('Visitor counter: CounterAPI browser library failed to load.');
-    return;
-  }
-
   const UNIQUE_FLAG = 'nihal_portfolio_visited';
+  const alreadyCounted = localStorage.getItem(UNIQUE_FLAG) === '1';
 
   try {
-    const counter = new Counter({ workspace: cfg.workspace, accessToken: cfg.apiKey });
+    const res = await fetch(`/.netlify/functions/visitor-count${alreadyCounted ? '' : '?unique=1'}`);
+    if (!res.ok) throw new Error('visitor-count function failed: ' + res.status);
+    const data = await res.json();
 
-    const totalResult = await counter.up(cfg.totalCounterName);
-
-    const alreadyCounted = localStorage.getItem(UNIQUE_FLAG) === '1';
-    const uniqueResult = alreadyCounted
-      ? await counter.get(cfg.uniqueCounterName)
-      : await counter.up(cfg.uniqueCounterName);
+    if (typeof data.total !== 'number' || typeof data.unique !== 'number') return;
     if (!alreadyCounted) { localStorage.setItem(UNIQUE_FLAG, '1'); }
-
-    const totalCount = totalResult && typeof totalResult.value === 'number' ? totalResult.value : null;
-    const uniqueCount = uniqueResult && typeof uniqueResult.value === 'number' ? uniqueResult.value : null;
-    if (totalCount === null || uniqueCount === null) return;
 
     const fmt = (n) => new Intl.NumberFormat().format(n);
     statsEl.innerHTML =
-      `<span class="stat-value">${fmt(totalCount)}</span> visits &middot; ` +
-      `<span class="stat-value">${fmt(uniqueCount)}</span> unique`;
+      `<span class="stat-value">${fmt(data.total)}</span> visits &middot; ` +
+      `<span class="stat-value">${fmt(data.unique)}</span> unique`;
     statsEl.hidden = false;
   } catch (err) {
     console.error('Visitor counter unavailable:', err);

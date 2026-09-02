@@ -3,12 +3,16 @@
 
 const PORTFOLIO_DATA = {
 
-  visitorCounter: {
-    workspace: "nihalurrahiyans-portfolio",                  // e.g. "nihalurrahiyan"
-    apiKey: "ut_3tg85jrsfDUnWNnwNQ2z77dfKC1o18jufeRPjCCT",    // e.g. "ctr_xxxxxxxxxxxxxxxx"
-    totalCounterName: "portfolio-visits-nihalurrahiyan",
-    uniqueCounterName: "portfolio-unique-visits-nihalurrahiyan"
-  },
+  // ---- Visitor counter (footer) ----
+  // Nothing to configure here anymore — the visitor counter now runs through
+  // a Netlify serverless function (netlify/functions/visitor-count.js) so
+  // your CounterAPI key never has to sit exposed in this file or your page
+  // source. To set it up:
+  //   1. Set the COUNTERAPI_KEY environment variable in your Netlify
+  //      dashboard (Site configuration → Environment variables).
+  //   2. Check the workspace/counter names at the top of
+  //      netlify/functions/visitor-count.js match your CounterAPI dashboard.
+  //   3. Redeploy.
 
   // The hero title cycles through these — add, remove, or reorder freely.
   roles: [
