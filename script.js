@@ -113,8 +113,22 @@ renderVisitorStats();
 // deployed yet, so this never breaks the rest of the page.
 async function renderVisitorStats() {
   const statsEl = document.getElementById('footerStats');
+  const badges = statsEl.querySelectorAll('.visitor-num');
   const UNIQUE_FLAG = 'nihal_portfolio_visited';
   const alreadyCounted = localStorage.getItem(UNIQUE_FLAG) === '1';
+
+  function animateCount(el, target) {
+    const valueEl = el.querySelector('.visitor-num-value');
+    const duration = 1100;
+    const startTime = performance.now();
+    function step(now) {
+      const p = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      valueEl.textContent = new Intl.NumberFormat().format(Math.round(eased * target));
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
 
   try {
     const res = await fetch(`/.netlify/functions/visitor-count${alreadyCounted ? '' : '?unique=1'}`);
@@ -124,11 +138,14 @@ async function renderVisitorStats() {
     if (typeof data.total !== 'number' || typeof data.unique !== 'number') return;
     if (!alreadyCounted) { localStorage.setItem(UNIQUE_FLAG, '1'); }
 
-    const fmt = (n) => new Intl.NumberFormat().format(n);
-    statsEl.innerHTML =
-      `<span class="stat-value">${fmt(data.total)}</span> visits &middot; ` +
-      `<span class="stat-value">${fmt(data.unique)}</span> unique`;
     statsEl.hidden = false;
+    if (reduceMotion) {
+      badges[0].querySelector('.visitor-num-value').textContent = new Intl.NumberFormat().format(data.total);
+      badges[1].querySelector('.visitor-num-value').textContent = new Intl.NumberFormat().format(data.unique);
+    } else {
+      animateCount(badges[0], data.total);
+      animateCount(badges[1], data.unique);
+    }
   } catch (err) {
     console.error('Visitor counter unavailable:', err);
     // stays hidden — a broken counter service should never break the page
